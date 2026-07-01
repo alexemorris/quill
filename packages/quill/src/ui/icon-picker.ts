@@ -1,4 +1,7 @@
 import Picker from './picker.js';
+import { setTrustedInnerHtml } from '../core/utils/html.js';
+
+
 
 class IconPicker extends Picker {
   defaultItem: HTMLElement | null;
@@ -8,7 +11,10 @@ class IconPicker extends Picker {
     this.container.classList.add('ql-icon-picker');
     Array.from(this.container.querySelectorAll('.ql-picker-item')).forEach(
       (item) => {
-        item.innerHTML = icons[item.getAttribute('data-value') || ''];
+        setTrustedInnerHtml(
+          item as HTMLElement,
+          icons[item.getAttribute('data-value') || ''],
+        );
       },
     );
     this.defaultItem = this.container.querySelector('.ql-selected');
@@ -20,7 +26,7 @@ class IconPicker extends Picker {
     const item = target || this.defaultItem;
     if (item != null) {
       if (this.label.innerHTML === item.innerHTML) return;
-      this.label.innerHTML = item.innerHTML;
+      setTrustedInnerHtml(this.label, item.innerHTML);
     }
   }
 }

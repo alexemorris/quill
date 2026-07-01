@@ -1,4 +1,5 @@
 import DropdownIcon from '../assets/icons/dropdown.svg';
+import { setTrustedInnerHtml } from '../core/utils/html.js';
 
 let optionsCounter = 0;
 
@@ -8,6 +9,8 @@ function toggleAriaAttribute(element: HTMLElement, attribute: string) {
     `${!(element.getAttribute(attribute) === 'true')}`,
   );
 }
+
+
 
 class Picker {
   select: HTMLSelectElement;
@@ -84,7 +87,7 @@ class Picker {
   buildLabel() {
     const label = document.createElement('span');
     label.classList.add('ql-picker-label');
-    label.innerHTML = DropdownIcon;
+    setTrustedInnerHtml(label, DropdownIcon);
     // @ts-expect-error
     label.tabIndex = '0';
     label.setAttribute('role', 'button');

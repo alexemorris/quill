@@ -23,6 +23,7 @@ import { FontStyle } from '../formats/font.js';
 import { SizeStyle } from '../formats/size.js';
 import { deleteRange } from './keyboard.js';
 import normalizeExternalHTML from './normalizeExternalHTML/index.js';
+import { parseHTML } from '../core/utils/html.js';
 
 const debug = logger('quill:clipboard');
 
@@ -69,39 +70,6 @@ const STYLE_ATTRIBUTORS = [
 
 interface ClipboardOptions {
   matchers: [Selector, Matcher][];
-}
-
-interface TrustedTypePolicy {
-  createHTML(s: string): unknown;
-}
-
-let clipboardPolicy: TrustedTypePolicy | null | undefined;
-
-function getClipboardPolicy(): TrustedTypePolicy | null {
-  if (clipboardPolicy === undefined) {
-    clipboardPolicy = null;
-    if (
-      typeof window !== 'undefined' &&
-      window.trustedTypes &&
-      window.trustedTypes.createPolicy
-    ) {
-      try {
-        clipboardPolicy = window.trustedTypes.createPolicy('quill-clipboard', {
-          createHTML: (s: string) => s,
-        });
-      } catch (e) {
-        // Fallback or ignore if policy creation fails
-      }
-    }
-  }
-  return clipboardPolicy;
-}
-
-function parseHTML(html: string): Document {
-  const policy = getClipboardPolicy();
-  const content = policy ? (policy.createHTML(html) as string) : html;
-  // @ts-expect-error parseFromString accepts TrustedHTML in modern browsers
-  return new DOMParser().parseFromString(content, 'text/html');
 }
 
 class Clipboard extends Module<ClipboardOptions> {
