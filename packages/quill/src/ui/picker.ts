@@ -1,5 +1,6 @@
 import DropdownIcon from '../assets/icons/dropdown.svg';
-import { setTrustedInnerHtml } from '../core/utils/html.js';
+import { setElementInnerHtml } from 'safevalues/dom';
+import { sanitizeHtml } from 'safevalues';
 
 let optionsCounter = 0;
 
@@ -87,7 +88,7 @@ class Picker {
   buildLabel() {
     const label = document.createElement('span');
     label.classList.add('ql-picker-label');
-    setTrustedInnerHtml(label, DropdownIcon);
+    setElementInnerHtml(label, sanitizeHtml(DropdownIcon));
     // @ts-expect-error
     label.tabIndex = '0';
     label.setAttribute('role', 'button');

@@ -24,12 +24,7 @@ function getPolicy(): TrustedTypePolicy | null {
   return quillPolicy;
 }
 
-export function setTrustedInnerHtml(element: HTMLElement, html: string) {
-  const policy = getPolicy();
-  const content = policy ? (policy.createHTML(html) as string) : html;
-  // @ts-expect-error innerHTML accepts TrustedHTML in modern browsers
-  element.innerHTML = content;
-}
+
 
 export function parseHTML(html: string): Document {
   const policy = getPolicy();

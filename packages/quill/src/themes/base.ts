@@ -2,7 +2,8 @@ import { merge } from 'lodash-es';
 import type Quill from '../core/quill.js';
 import Emitter from '../core/emitter.js';
 import Theme from '../core/theme.js';
-import { setTrustedInnerHtml } from '../core/utils/html.js';
+import { setElementInnerHtml } from 'safevalues/dom';
+import { sanitizeHtml } from 'safevalues';
 import type { ThemeOptions } from '../core/theme.js';
 import ColorPicker from '../ui/color-picker.js';
 import IconPicker from '../ui/icon-picker.js';
@@ -123,17 +124,17 @@ class BaseTheme extends Theme {
         if (icons[name] == null) return;
         if (name === 'direction') {
           // @ts-expect-error
-          setTrustedInnerHtml(button, icons[name][''] + icons[name].rtl);
+          setElementInnerHtml(button, sanitizeHtml(icons[name][''] + icons[name].rtl));
         } else if (typeof icons[name] === 'string') {
           // @ts-expect-error
-          setTrustedInnerHtml(button, icons[name]);
+          setElementInnerHtml(button, sanitizeHtml(icons[name]));
         } else {
           // @ts-expect-error
           const value = button.value || '';
           // @ts-expect-error
           if (value != null && icons[name][value]) {
             // @ts-expect-error
-            setTrustedInnerHtml(button, icons[name][value]);
+            setElementInnerHtml(button, sanitizeHtml(icons[name][value]));
           }
         }
       });
