@@ -1,6 +1,6 @@
 import DropdownIcon from '../assets/icons/dropdown.svg';
 import { setElementInnerHtml } from 'safevalues/dom';
-import { sanitizeHtml } from 'safevalues';
+import { htmlSafeByReview } from 'safevalues/restricted/reviewed';
 
 let optionsCounter = 0;
 
@@ -88,7 +88,7 @@ class Picker {
   buildLabel() {
     const label = document.createElement('span');
     label.classList.add('ql-picker-label');
-    setElementInnerHtml(label, sanitizeHtml(DropdownIcon));
+    setElementInnerHtml(label, htmlSafeByReview(DropdownIcon, { justification: 'Bundled SVG icon' }));
     // @ts-expect-error
     label.tabIndex = '0';
     label.setAttribute('role', 'button');

@@ -1,6 +1,6 @@
 import Picker from './picker.js';
 import { setElementInnerHtml } from 'safevalues/dom';
-import { sanitizeHtml } from 'safevalues';
+import { htmlSafeByReview } from 'safevalues/restricted/reviewed';
 
 
 
@@ -14,7 +14,7 @@ class IconPicker extends Picker {
       (item) => {
         setElementInnerHtml(
           item as HTMLElement,
-          sanitizeHtml(icons[item.getAttribute('data-value') || '']),
+          htmlSafeByReview(icons[item.getAttribute('data-value') || ''], { justification: 'Bundled SVG icon' }),
         );
       },
     );
@@ -27,7 +27,7 @@ class IconPicker extends Picker {
     const item = target || this.defaultItem;
     if (item != null) {
       if (this.label.innerHTML === item.innerHTML) return;
-      setElementInnerHtml(this.label, sanitizeHtml(item.innerHTML));
+      setElementInnerHtml(this.label, htmlSafeByReview(item.innerHTML, { justification: 'Copied from trusted icon item' }));
     }
   }
 }
