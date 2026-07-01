@@ -71,6 +71,39 @@ interface ClipboardOptions {
   matchers: [Selector, Matcher][];
 }
 
+interface TrustedTypePolicy {
+  createHTML(s: string): unknown;
+}
+
+let clipboardPolicy: TrustedTypePolicy | null | undefined;
+
+function getClipboardPolicy(): TrustedTypePolicy | null {
+  if (clipboardPolicy === undefined) {
+    clipboardPolicy = null;
+    if (
+      typeof window !== 'undefined' &&
+      window.trustedTypes &&
+      window.trustedTypes.createPolicy
+    ) {
+      try {
+        clipboardPolicy = window.trustedTypes.createPolicy('quill-clipboard', {
+          createHTML: (s: string) => s,
+        });
+      } catch (e) {
+        // Fallback or ignore if policy creation fails
+      }
+    }
+  }
+  return clipboardPolicy;
+}
+
+function parseHTML(html: string): Document {
+  const policy = getClipboardPolicy();
+  const content = policy ? (policy.createHTML(html) as string) : html;
+  // @ts-expect-error parseFromString accepts TrustedHTML in modern browsers
+  return new DOMParser().parseFromString(content, 'text/html');
+}
+
 class Clipboard extends Module<ClipboardOptions> {
   static DEFAULTS: ClipboardOptions = {
     matchers: [],
@@ -125,7 +158,7 @@ class Clipboard extends Module<ClipboardOptions> {
   }
 
   protected convertHTML(html: string) {
-    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const doc = parseHTML(html);
     this.normalizeHTML(doc);
     const container = doc.body;
     const nodeMatches = new WeakMap();
@@ -213,7 +246,7 @@ class Clipboard extends Module<ClipboardOptions> {
       return;
     }
     if (html && files.length > 0) {
-      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const doc = parseHTML(html);
       if (
         doc.body.childElementCount === 1 &&
         doc.body.firstElementChild?.tagName === 'IMG'
